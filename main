@@ -21,7 +21,7 @@ local targetPlaces = {
     Vector3.new(-422, 88, -32),
 }
 
--- Функция для безопасного получения HumanoidRootPart
+-- Безопасная функция для HumanoidRootPart
 local function getHRP()
     local char = player.Character or player.CharacterAdded:Wait()
     local hrp = char:WaitForChild("HumanoidRootPart", 10)
@@ -34,20 +34,18 @@ local function tpTo(pos)
 end
 
 local function runCycle()
-    -- Ждём 7 секунды перед стартом
-    task.wait(7)
+    task.wait(4) -- ожидание перед стартом
 
-    -- Основной цикл
     while true do
         local hrp = getHRP()
 
-        -- Ждём стартовую позицию
+        -- ждем стартовую позицию
         repeat
             task.wait()
             tpTo(startPos)
         until (hrp.Position - startPos).Magnitude < 5
 
-        -- Проверка на 150 студов
+        -- проверка на 150 студов
         local moved = false
         while not moved do
             task.wait()
@@ -59,20 +57,19 @@ local function runCycle()
             end
         end
 
-        -- Проход по точкам
+        -- телепорты по точкам
         for _, pos in ipairs(targetPlaces) do
             tpTo(pos)
             task.wait(0.1)
         end
 
-        -- Server hop
+        -- сервер-хоп
         task.wait(0.5)
         TeleportService:Teleport(placeId, player)
 
-        -- Ждём нового персонажа после хопа
+        -- ждём нового персонажа после хопа
         repeat task.wait() until player.Character and player.Character:FindFirstChild("HumanoidRootPart")
     end
 end
 
--- Запуск цикла
 runCycle()
