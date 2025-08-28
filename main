@@ -36,7 +36,7 @@ end
 
 local function main()
     -- Ожидание 4 секунды перед началом
-    task.wait(4)
+    task.wait(7)
 
     while true do
         local hrp = getHRP()
