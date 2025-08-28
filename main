@@ -1,5 +1,4 @@
--- main.lua (для GitHub)
-
+-- main.lua
 local Players = game:GetService("Players")
 local TeleportService = game:GetService("TeleportService")
 local player = Players.LocalPlayer
@@ -22,7 +21,7 @@ local targetPlaces = {
     Vector3.new(-422, 88, -32),
 }
 
--- Безопасная функция для получения HumanoidRootPart
+-- Функция для безопасного получения HumanoidRootPart
 local function getHRP()
     local char = player.Character or player.CharacterAdded:Wait()
     local hrp = char:WaitForChild("HumanoidRootPart", 10)
@@ -34,20 +33,21 @@ local function tpTo(pos)
     hrp.CFrame = CFrame.new(pos)
 end
 
-local function main()
-    -- Ожидание 4 секунды перед началом
+local function runCycle()
+    -- Ждём 7 секунды перед стартом
     task.wait(7)
 
+    -- Основной цикл
     while true do
         local hrp = getHRP()
 
-        -- Ждём пока игрок окажется в стартовой точке
+        -- Ждём стартовую позицию
         repeat
             task.wait()
             tpTo(startPos)
         until (hrp.Position - startPos).Magnitude < 5
 
-        -- Проверяем — сдвинулся ли игрок более чем на threshold по любой оси
+        -- Проверка на 150 студов
         local moved = false
         while not moved do
             task.wait()
@@ -59,7 +59,7 @@ local function main()
             end
         end
 
-        -- Проход по целевым точкам
+        -- Проход по точкам
         for _, pos in ipairs(targetPlaces) do
             tpTo(pos)
             task.wait(0.1)
@@ -68,8 +68,11 @@ local function main()
         -- Server hop
         task.wait(0.5)
         TeleportService:Teleport(placeId, player)
-        break
+
+        -- Ждём нового персонажа после хопа
+        repeat task.wait() until player.Character and player.Character:FindFirstChild("HumanoidRootPart")
     end
 end
 
-main()
+-- Запуск цикла
+runCycle()
