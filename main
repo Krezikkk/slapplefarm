@@ -20,22 +20,28 @@ local targetPlaces = {
     Vector3.new(-422, 88, -32),
 }
 
-local function tpTo(pos)
+local function getHRP()
     local char = player.Character or player.CharacterAdded:Wait()
-    local hrp = char:WaitForChild("HumanoidRootPart")
+    local hrp = char:WaitForChild("HumanoidRootPart", 10) -- ждём до 10 секунд
+    return hrp
+end
+
+local function tpTo(pos)
+    local hrp = getHRP()
     hrp.CFrame = CFrame.new(pos)
 end
 
 local function main()
     while true do
-        local char = player.Character or player.CharacterAdded:Wait()
-        local hrp = char:WaitForChild("HumanoidRootPart")
+        local hrp = getHRP()
 
+        -- ждем пока игрок будет в стартовой точке
         repeat
             task.wait()
             tpTo(startPos)
         until (hrp.Position - startPos).Magnitude < 5
 
+        -- проверка на 150 студов
         local moved = false
         while not moved do
             task.wait()
@@ -47,11 +53,13 @@ local function main()
             end
         end
 
+        -- телепорты по точкам
         for _, pos in ipairs(targetPlaces) do
             tpTo(pos)
             task.wait(0.1)
         end
 
+        -- сервер хоп
         task.wait(0.5)
         TeleportService:Teleport(placeId, player)
         break
