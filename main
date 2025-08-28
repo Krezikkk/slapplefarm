@@ -34,7 +34,7 @@ local function tpTo(pos)
 end
 
 local function runCycle()
-    task.wait(4) -- ожидание перед стартом
+    task.wait(8) -- ожидание перед стартом
 
     while true do
         local hrp = getHRP()
