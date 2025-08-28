@@ -23,18 +23,26 @@ local targetPlaces = {
 
 local function getHRP()
     local char = player.Character or player.CharacterAdded:Wait()
-    return char:WaitForChild("HumanoidRootPart", 10)
+    local hrp = char:WaitForChild("HumanoidRootPart", 10)
+    return hrp
 end
 
 local function tpTo(pos)
     local hrp = getHRP()
     hrp.CFrame = CFrame.new(pos)
+    print("[Teleport] Переместились в:", pos)
 end
 
--- Основная логика одной итерации
-task.wait(7) -- ожидание перед стартом
+-- Скрипт стартует
+print("[Main] Инжект выполнен. Скрипт запущен.")
+
+-- Ждём перед стартом
+local waitTime = 4
+print("[Main] Ожидание перед выполнением:", waitTime, "секунд")
+task.wait(waitTime)
 
 -- Ждём стартовую позицию
+print("[Main] Телепорт на стартовую позицию:", startPos)
 local hrp = getHRP()
 repeat
     task.wait()
@@ -42,23 +50,27 @@ repeat
 until (hrp.Position - startPos).Magnitude < 5
 
 -- Проверка на 150 студов
+print("[Main] Проверка движения персонажа на threshold:", threshold)
 local moved = false
 while not moved do
     task.wait()
     local diff = hrp.Position - startPos
     if math.abs(diff.X) > threshold or math.abs(diff.Y) > threshold or math.abs(diff.Z) > threshold then
         moved = true
+        print("[Main] Игрок сдвинулся на threshold. Продолжаем телепорты.")
     else
         tpTo(startPos)
     end
 end
 
 -- Телепорты по точкам
-for _, pos in ipairs(targetPlaces) do
+for i, pos in ipairs(targetPlaces) do
+    print(string.format("[Main] Телепортируемся на точку %d: %s", i, tostring(pos)))
     tpTo(pos)
     task.wait(0.1)
 end
 
 -- Сервер-хоп
+print("[Main] Выполняем сервер-хоп на placeId:", placeId)
 task.wait(0.5)
 TeleportService:Teleport(placeId, player)
