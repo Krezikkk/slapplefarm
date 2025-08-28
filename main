@@ -1,3 +1,5 @@
+-- main.lua (для GitHub)
+
 local Players = game:GetService("Players")
 local TeleportService = game:GetService("TeleportService")
 local player = Players.LocalPlayer
@@ -20,9 +22,10 @@ local targetPlaces = {
     Vector3.new(-422, 88, -32),
 }
 
+-- Безопасная функция для получения HumanoidRootPart
 local function getHRP()
     local char = player.Character or player.CharacterAdded:Wait()
-    local hrp = char:WaitForChild("HumanoidRootPart", 10) -- ждём до 10 секунд
+    local hrp = char:WaitForChild("HumanoidRootPart", 10)
     return hrp
 end
 
@@ -32,16 +35,19 @@ local function tpTo(pos)
 end
 
 local function main()
+    -- Ожидание 4 секунды перед началом
+    task.wait(4)
+
     while true do
         local hrp = getHRP()
 
-        -- ждем пока игрок будет в стартовой точке
+        -- Ждём пока игрок окажется в стартовой точке
         repeat
             task.wait()
             tpTo(startPos)
         until (hrp.Position - startPos).Magnitude < 5
 
-        -- проверка на 150 студов
+        -- Проверяем — сдвинулся ли игрок более чем на threshold по любой оси
         local moved = false
         while not moved do
             task.wait()
@@ -53,13 +59,13 @@ local function main()
             end
         end
 
-        -- телепорты по точкам
+        -- Проход по целевым точкам
         for _, pos in ipairs(targetPlaces) do
             tpTo(pos)
             task.wait(0.1)
         end
 
-        -- сервер хоп
+        -- Server hop
         task.wait(0.5)
         TeleportService:Teleport(placeId, player)
         break
