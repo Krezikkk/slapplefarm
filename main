@@ -1,0 +1,61 @@
+local Players = game:GetService("Players")
+local TeleportService = game:GetService("TeleportService")
+local player = Players.LocalPlayer
+
+local startPos = Vector3.new(-1011, 328, 3)
+local threshold = 150
+local placeId = 6403373529
+
+local targetPlaces = {
+    Vector3.new(-432, 51, -25),
+    Vector3.new(-398, 65, 20),
+    Vector3.new(-372, 51, -29),
+    Vector3.new(-385, 51, 18),
+    Vector3.new(-407, 51, 14),
+    Vector3.new(-372, 60, 13),
+    Vector3.new(-365, 52, -28.79),
+    Vector3.new(-412.71, 51, -43.5),
+    Vector3.new(-432.63, 51, -24.5),
+    Vector3.new(-414.97, 52, 15),
+    Vector3.new(-422, 88, -32),
+}
+
+local function tpTo(pos)
+    local char = player.Character or player.CharacterAdded:Wait()
+    local hrp = char:WaitForChild("HumanoidRootPart")
+    hrp.CFrame = CFrame.new(pos)
+end
+
+local function main()
+    while true do
+        local char = player.Character or player.CharacterAdded:Wait()
+        local hrp = char:WaitForChild("HumanoidRootPart")
+
+        repeat
+            task.wait()
+            tpTo(startPos)
+        until (hrp.Position - startPos).Magnitude < 5
+
+        local moved = false
+        while not moved do
+            task.wait()
+            local diff = hrp.Position - startPos
+            if math.abs(diff.X) > threshold or math.abs(diff.Y) > threshold or math.abs(diff.Z) > threshold then
+                moved = true
+            else
+                tpTo(startPos)
+            end
+        end
+
+        for _, pos in ipairs(targetPlaces) do
+            tpTo(pos)
+            task.wait(0.1)
+        end
+
+        task.wait(0.5)
+        TeleportService:Teleport(placeId, player)
+        break
+    end
+end
+
+main()
